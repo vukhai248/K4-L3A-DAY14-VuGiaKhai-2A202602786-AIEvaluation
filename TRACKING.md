@@ -40,44 +40,38 @@
 ## 🚀 3. LỘ TRÌNH THỰC HIỆN CHI TIẾT THEO CHECKPOINTS (CP0 -> CP5)
 
 ### 🔹 CHECKPOINT 0: Setup & Baseline Môi trường
-- [ ] **CP0.1** Kiểm tra phiên bản Python (yêu cầu Python 3.11+):
-  ```powershell
-  python --version
-  ```
-- [ ] **CP0.2** Cài đặt dependencies:
-  ```powershell
-  pip install -r requirements.txt
-  ```
+- [x] **CP0.1** Kiểm tra phiên bản Python (yêu cầu Python 3.11+): `Python 3.13.13` (Conda `DL`).
+- [x] **CP0.2** Cài đặt/xác nhận dependencies: `openai`, `python-dotenv`, `pytest` đã sẵn sàng.
 - [ ] **CP0.3** Tạo file `.env` từ `.env.example` và cấu hình:
   ```powershell
   Copy-Item .env.example .env
   ```
-  *Điền `OPENAI_API_KEY` và `OPENAI_MODEL=gpt-4o-mini` vào `.env` (chỉ dùng cho Part 3).*
-- [ ] **CP0.4** Chạy baseline tests:
+  *(Cần điền `OPENAI_API_KEY` trước khi chạy RAG ở CP4).*
+- [x] **CP0.4** Chạy baseline tests:
   ```powershell
   pytest tests/ -v
   ```
-  *Kỳ vọng ban đầu: 42 collected, 42 failed (bình thường vì code starter chứa TODO).*
+  *Kết quả ban đầu: 42 collected, 42 failed (chuẩn baseline).*
 
 ---
 
 ### 🔹 CHECKPOINT 1: Hoàn thành Task 1 — Data Models (CP1)
-- [ ] **CP1.1** Khai báo dataclass `QAPair` trong `template.py`:
+- [x] **CP1.1** Khai báo dataclass `QAPair` trong `template.py`:
   - `question: str`
   - `expected_answer: str`
-  - `context: str = ""`
+  - `context: str | None = ""`
   - `metadata: dict = field(default_factory=dict)`
   - `retrieved_contexts: list = field(default_factory=list)`
-- [ ] **CP1.2** Khai báo dataclass `EvalResult` trong `template.py`:
+- [x] **CP1.2** Khai báo dataclass `EvalResult` trong `template.py`:
   - Các answer metrics: `faithfulness: float`, `relevance: float`, `completeness: float`
   - Retrieval metrics (optional): `context_recall: float | None = None`, `context_precision: float | None = None`
   - Kết quả: `passed: bool = True`, `failure_type: str | None = None`
   - Method `overall_score() -> float`: trả về trung bình cộng `(faithfulness + relevance + completeness) / 3.0`
-- [ ] **CP1.3** Kiểm tra Targeted Test Task 1:
+- [x] **CP1.3** Kiểm tra Targeted Test Task 1:
   ```powershell
   pytest tests/test_solution.py::TestEvalResultOverallScore -v
   ```
-  *Kỳ vọng:* **3 passed**.
+  *Kết quả:* **3 passed in 0.07s**.
 
 ---
 
@@ -195,4 +189,6 @@
 | Thời điểm | Mục tiêu / Checkpoint | Kết quả thực tế | Người thực hiện / Ghi chú |
 |---|---|---|---|
 | Khởi tạo | Đọc hiểu repo & tạo file tracking | Đã hoàn thành phân tích toàn bộ repo, tạo TRACKING.md | AI Pair Programmer |
+| CP0 | Xác nhận môi trường & baseline test | Python 3.13.13, 42 tests failed đúng baseline | AI Pair Programmer |
+| CP1 | Hoàn thành Task 1 (Data Models) | `TestEvalResultOverallScore` PASS 3/3 tests | AI Pair Programmer |
 | | | | |
