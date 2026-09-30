@@ -76,25 +76,25 @@
 ---
 
 ### 🔹 CHECKPOINT 2: Task 2 (RAGAS Metrics) & Task 3 (LLM Judge) (CP2)
-- [ ] **CP2.1** Hoàn thiện 3 Answer-side Metrics trong `RAGASEvaluator`:
+- [x] **CP2.1** Hoàn thiện 3 Answer-side Metrics trong `RAGASEvaluator`:
   - `evaluate_faithfulness(answer, context)` (đo hallucination: token answer có xuất hiện trong context không).
   - `evaluate_relevance(answer, question)` (đo độ liên quan của answer với query).
   - `evaluate_completeness(answer, expected)` (đo độ đầy đủ so với ground-truth).
-- [ ] **CP2.2** Hoàn thiện 2 Retrieval-side Metrics trong `RAGASEvaluator`:
+- [x] **CP2.2** Hoàn thiện 2 Retrieval-side Metrics trong `RAGASEvaluator`:
   - `evaluate_context_recall(contexts, expected)` (đo độ bao phủ ground-truth của union các retrieved contexts).
   - `evaluate_context_precision(contexts, expected)` (đo rank-aware Average Precision@K, chunk relevant ở top được điểm cao).
-- [ ] **CP2.3** Hoàn thiện `run_full_eval()`:
+- [x] **CP2.3** Hoàn thiện `run_full_eval()`:
   - Luôn tính 3 answer metrics.
   - Nếu có `contexts`: gọi 2 retrieval metrics; nếu `contexts is None`: gán 2 retrieval metrics là `None`.
   - Phân loại `failure_type`: "hallucination", "irrelevant", "incomplete", "off_topic".
-- [ ] **CP2.4** Hoàn thiện `LLMJudge`:
+- [x] **CP2.4** Hoàn thiện `LLMJudge`:
   - `score_response(question, answer, rubric)`: gọi LLM mock/real, parse điểm JSON (fallback 0.5 nếu lỗi).
   - `detect_bias(scores_batch)`: phát hiện positional bias, leniency bias (> 0.8), severity bias (< 0.3).
-- [ ] **CP2.5** Kiểm tra Targeted Test Task 2 & Task 3:
+- [x] **CP2.5** Kiểm tra Targeted Test Task 2 & Task 3:
   ```powershell
   pytest tests/test_solution.py::TestRAGASEvaluator tests/test_solution.py::TestContextMetrics tests/test_solution.py::TestRetrievalMetricWiring::test_run_full_eval_connects_optional_retrieval_metrics tests/test_solution.py::TestLLMJudge -v
   ```
-  *Kỳ vọng cộng dồn:* **21 passed, 20 failed, 1 skipped**.
+  *Kết quả:* **19/19 passed in 0.06s** (bao gồm cả test bonus reranking). Toàn suite đạt **22 passed, 20 failed**.
 
 ---
 
@@ -191,4 +191,5 @@
 | Khởi tạo | Đọc hiểu repo & tạo file tracking | Đã hoàn thành phân tích toàn bộ repo, tạo TRACKING.md | AI Pair Programmer |
 | CP0 | Xác nhận môi trường & baseline test | Python 3.13.13, 42 tests failed đúng baseline | AI Pair Programmer |
 | CP1 | Hoàn thành Task 1 (Data Models) | `TestEvalResultOverallScore` PASS 3/3 tests | AI Pair Programmer |
+| CP2 | Hoàn thành Task 2 & 3 (RAGAS & LLMJudge) | Targeted tests PASS 19/19 tests (cộng dồn 22 passed, 20 failed) | AI Pair Programmer |
 | | | | |
