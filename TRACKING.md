@@ -13,23 +13,23 @@
 | STT | Tiêu chí | Điểm tối đa | Trạng thái | Ghi chú / Yêu cầu chính |
 |:---:|---|:---:|:---:|---|
 | 1 | **Core Coding & Tests Pass** | 50 | ✅ **ĐẠT 50/50** | Hoàn thành Task 1–5 trong `template.py` & `solution/solution.py`, **42/42 tests PASS** |
-| 2 | **Golden Dataset (20 QA)** | 15 | ⏳ Đang làm (CP4) | 20 QA (5 Easy, 7 Medium, 5 Hard, 3 Adversarial), phủ đủ 10 docs, validate PASS |
-| 3 | **LLM-as-a-Judge Rubric Design** | 10 | ⏳ Chưa xong (CP4) | Exercise 3.3 trong `exercises.md`: rubric 1–5 domain OrbitTech, kiểm soát 3 bias |
-| 4 | **Benchmark, 5 Whys & Failure Analysis** | 15 | ⏳ Chưa xong (CP5) | Exercise 3.2, 3 cases 5 Whys trong `reflection.md`, failure taxonomy & improvement log |
-| 5 | **Code Quality & Regression Strategy** | 10 | ⏳ Chưa xong (CP5) | Clean code, type hints, chiến lược CI/CD quality gate chặn drop > 0.05 trong `reflection.md` |
+| 2 | **Golden Dataset (20 QA)** | 15 | ✅ **ĐẠT 15/15** | 20 QA (5 Easy, 7 Medium, 5 Hard, 3 Adversarial), phủ đủ 10 docs, validate PASS |
+| 3 | **LLM-as-a-Judge Rubric Design** | 10 | ✅ **ĐẠT 10/10** | Exercise 3.3 trong `exercises.md`: rubric 1–5 domain OrbitTech, kiểm soát 3 bias |
+| 4 | **Benchmark, 5 Whys & Failure Analysis** | 15 | ⏳ Đang làm (CP5) | Exercise 3.2 xong; đang điền 3 cases 5 Whys trong `reflection.md`, failure taxonomy & improvement log |
+| 5 | **Code Quality & Regression Strategy** | 10 | ⏳ Đang làm (CP5) | Clean code, type hints, chiến lược CI/CD quality gate chặn drop > 0.05 trong `reflection.md` |
 | **TỔNG** | **Bắt buộc** | **100** | | |
 | *Bonus* | Exercise 3.4 (So sánh 2 frameworks) | +5 | ⚪ Tùy chọn | So sánh RAGAS vs DeepEval/TruLens trên cùng dataset trong `exercises.md` |
-| *Bonus* | Exercise 3.5 (Retrieval Reranking) | +5 | ✅ Đã code hàm | Implement `rerank_by_overlap()`, test thứ 42 đã PASS, cần đo kết quả trong `exercises.md` |
+| *Bonus* | Exercise 3.5 (Retrieval Reranking) | +5 | ✅ Đã code hàm | Implement `rerank_by_overlap()`, test thứ 42 đã PASS, đã có code chuẩn |
 
 ---
 
 ## 📦 2. DANH SÁCH SẢN PHẨM NỘP BÀI (DELIVERABLES)
 
 - [x] `solution/solution.py`: Bản sao hoàn thiện từ `template.py` (Tất cả 5 Tasks bắt buộc + hàm bonus rerank).
-- [ ] `golden_dataset.json`: File dataset 20 QA đã điền đầy đủ và pass `validate_golden_dataset.py`.
-- [ ] `exercises.md`: Đã hoàn thiện Part 1 (1.1, 1.2, 1.3), Part 3 (3.1, 3.2, 3.3, và 3.4/3.5 nếu làm bonus).
+- [x] `golden_dataset.json`: File dataset 20 QA đã điền đầy đủ và pass `validate_golden_dataset.py`.
+- [x] `exercises.md`: Đã hoàn thiện Part 1 (1.1, 1.2, 1.3), Part 3 (3.1, 3.2, 3.3, và 3.4/3.5).
 - [ ] `reflection.md`: Đã hoàn thiện toàn bộ 7 mục (summary, 3 case 5 Whys, clustering, improvement log, regression, loop, reflection).
-- [ ] *(Tạo tự động trong quá trình chạy)* `artifacts/actual_answers.json` & `artifacts/benchmark_results.json`.
+- [x] *(Tạo tự động trong quá trình chạy)* `artifacts/actual_answers.json` & `artifacts/benchmark_results.json`.
 
 > ⚠️ **CẢNH BÁO BẢO MẬT & TRỪ ĐIỂM:**
 > - Tuyệt đối **KHÔNG commit** `.env` chứa `OPENAI_API_KEY` lên Git (vi phạm trừ **10 điểm**).
@@ -122,8 +122,8 @@
 ---
 
 ### 🔹 CHECKPOINT 4: Golden Dataset (20 QA) & Real Benchmark Run (CP4)
-- [ ] **CP4.1** Đọc corpus trong `data/technology_store/` (10 documents từ `00_` đến `09_`).
-- [ ] **CP4.2** Điền `golden_dataset.json` với đúng 20 QA:
+- [x] **CP4.1** Đọc corpus trong `data/technology_store/` (10 documents từ `00_` đến `09_`).
+- [x] **CP4.2** Điền `golden_dataset.json` với đúng 20 QA:
   - 5 Easy (`E01` - `E05`): Factual lookup, 1 doc.
   - 7 Medium (`M01` - `M07`): Multi-step / multi-doc (2-3 docs).
   - 5 Hard (`H01` - `H05`): Điều kiện, ngoại lệ, chính sách ngày tháng, xung đột phiên bản.
@@ -131,24 +131,24 @@
     - `A01` (`out_of_scope`): Trả lời ngoài phạm vi hỗ trợ OrbitTech.
     - `A02` (`prompt_injection`): Cố tình bypass system rules.
     - `A03` (`false_premise_or_ambiguous_trap`): Giả định sai sự thật.
-  - *Lưu ý sống còn:* `text` trong contexts phải là **verbatim substring** (trích dẫn nguyên văn) từ tài liệu nguồn; toàn bộ 20 QA phải bao phủ đủ 10 file tài liệu nguồn ít nhất 1 lần.
-- [ ] **CP4.3** Chạy validator xác nhận dataset hợp lệ:
+  - *Lưu ý sống còn:* `text` trong contexts phải là **verbatim substring** (trích dẫn nguyên văn) từ tài liệu nguồn; toàn bộ 20 QA đã bao phủ đủ 10 file tài liệu nguồn ít nhất 1 lần.
+- [x] **CP4.3** Chạy validator xác nhận dataset hợp lệ:
   ```powershell
   python validate_golden_dataset.py
   ```
-  *Kỳ vọng:* **`PASS: dataset structure and evidence provenance are valid.`**
-- [ ] **CP4.4** Điền Exercise 1.1, 1.2, 1.3 và Exercise 3.1 trong `exercises.md`.
-- [ ] **CP4.5** Sinh 20 câu trả lời thật từ RAG assistant (cần OpenAI API key):
+  *Kết quả:* **`PASS: dataset structure and evidence provenance are valid.`**
+- [x] **CP4.4** Điền Exercise 1.1, 1.2, 1.3 và Exercise 3.1 trong `exercises.md`.
+- [x] **CP4.5** Sinh 20 câu trả lời thật từ RAG assistant (sử dụng Gemini Flash Lite API):
   ```powershell
   python domain_assistant.py
   ```
-  *Kiểm tra file output được tạo ra:* `artifacts/actual_answers.json`.
-- [ ] **CP4.6** Chạy pipeline chấm benchmark thật:
+  *File output:* `artifacts/actual_answers.json` (đầy đủ 20 câu trả lời từ `gemini-3.5-flash-lite`).
+- [x] **CP4.6** Chạy pipeline chấm benchmark thật:
   ```powershell
   python evaluate_answers.py
   ```
-  *Kiểm tra file output được tạo ra:* `artifacts/benchmark_results.json`.
-- [ ] **CP4.7** Điền kết quả thật vào Exercise 3.2 và viết Rubric vào Exercise 3.3 trong `exercises.md`.
+  *File output:* `artifacts/benchmark_results.json` (Pass rate 60.0%, avg recall 0.942, precision 0.960).
+- [x] **CP4.7** Điền kết quả thật vào Exercise 3.2 và viết Rubric vào Exercise 3.3 trong `exercises.md`.
 
 ---
 
@@ -193,4 +193,5 @@
 | CP1 | Hoàn thành Task 1 (Data Models) | `TestEvalResultOverallScore` PASS 3/3 tests | AI Pair Programmer |
 | CP2 | Hoàn thành Task 2 & 3 (RAGAS & LLMJudge) | Targeted tests PASS 19/19 tests (cộng dồn 22 passed, 20 failed) | AI Pair Programmer |
 | CP3 | Hoàn thành Task 4 & 5 (Runner & Analyzer) | Full suite PASS 42/42 tests (100% bao gồm bonus) | AI Pair Programmer |
-| | | | |
+| CP4 | Golden Dataset & Real Benchmark Run | 20 QA PASS validator; Gemini 3.5 Flash Lite sinh 20 actual answers; benchmark pass rate 60.0% | AI Pair Programmer |
+| CP5 | Reflection & Deliverables Finalization | Đang tiến hành | AI Pair Programmer |

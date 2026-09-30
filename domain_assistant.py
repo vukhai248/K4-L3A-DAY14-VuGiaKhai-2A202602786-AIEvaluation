@@ -246,24 +246,47 @@ class OpenAIGenerator:
     def __init__(self, max_output_tokens: int = 300) -> None:
         api_key = os.getenv("OPENAI_API_KEY", "").strip()
         self.model = os.getenv("OPENAI_MODEL", "").strip()
+        base_url = os.getenv("OPENAI_BASE_URL", "").strip() or None
         if not api_key:
             raise RuntimeError("OPENAI_API_KEY is missing from .env")
         if not self.model:
             raise RuntimeError("OPENAI_MODEL is missing from .env")
-        self.client = OpenAI(api_key=api_key)
+        self.client = OpenAI(api_key=api_key, base_url=base_url)
         self.max_output_tokens = max_output_tokens
 
     def generate(self, prompt: str) -> str:
-        response = self.client.responses.create(
-            model=self.model,
-            input=prompt,
-            temperature=0,
-            max_output_tokens=self.max_output_tokens,
-        )
-        answer = response.output_text.strip()
-        if not answer:
-            raise RuntimeError("OpenAI returned an empty answer")
-        return answer
+        for attempt in range(8):
+            try:
+                # Try chat completions first for Gemini/OpenAI compatibility
+                chat_response = self.client.chat.completions.create(
+                    model=self.model,
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0,
+                    max_tokens=self.max_output_tokens,
+                )
+                answer = (chat_response.choices[0].message.content or "").strip()
+                if answer:
+                    return answer
+            except Exception as e_chat:
+                try:
+                    # Fallback to responses API if supported
+                    response = self.client.responses.create(
+                        model=self.model,
+                        input=prompt,
+                        temperature=0,
+                        max_output_tokens=self.max_output_tokens,
+                    )
+                    answer = response.output_text.strip()
+                    if answer:
+                        return answer
+                except Exception:
+                    pass
+
+                wait_sec = 15 * (attempt + 1)
+                print(f"\n[Retry {attempt + 1}/8] Transient error: {e_chat}. Retrying in {wait_sec}s...", flush=True)
+                time.sleep(wait_sec)
+
+        raise RuntimeError("Failed to generate answer after 8 attempts")
 
 
 @dataclass(frozen=True)
@@ -380,6 +403,7 @@ def generate_actual_answers(
     generator: TextGenerator | None = None,
     top_k: int = 5,
     progress: ProgressCallback | None = None,
+    output_file: Path | None = None,
 ) -> dict[str, Any]:
     """Generate the auditable actual-answer artifact for all dataset questions."""
 
@@ -405,6 +429,18 @@ def generate_actual_answers(
         f"model={model}, top_k={top_k}"
     )
 
+    cached_answers: dict[str, dict[str, Any]] = {}
+    if output_file and Path(output_file).exists():
+        try:
+            prev_data = json.loads(Path(output_file).read_text(encoding="utf-8"))
+            for ans in prev_data.get("answers", []):
+                if ans.get("id") and ans.get("actual_answer") and not ans.get("error"):
+                    cached_answers[ans["id"]] = ans
+            if cached_answers:
+                notify(f"Found {len(cached_answers)} cached answers from {output_file}")
+        except Exception:
+            pass
+
     answers: list[dict[str, Any]] = []
     for index, item in enumerate(questions, start=1):
         percentage = index / total
@@ -414,6 +450,12 @@ def generate_actual_answers(
         question_preview = re.sub(r"\s+", " ", item["question"]).strip()
         if len(question_preview) > 58:
             question_preview = f"{question_preview[:55]}..."
+
+        if item["id"] in cached_answers:
+            answers.append(cached_answers[item["id"]])
+            notify(f"[{bar_before}] {index:02d}/{total:02d} | {item['id']} CACHED: {question_preview}")
+            continue
+
         notify(
             f"[{bar_before}] {completed_before:02d}/{total:02d} | "
             f"{item['id']} generating: {question_preview}"
@@ -451,6 +493,29 @@ def generate_actual_answers(
             f"[{bar_after}] {index:02d}/{total:02d} | {item['id']} OK "
             f"({elapsed:.1f}s, {len(response.retrieved_chunks)} chunks)"
         )
+
+        if output_file:
+            partial_artifact = {
+                "schema_version": "1.0",
+                "corpus_id": assistant.corpus_id,
+                "generated_at": datetime.now(UTC).isoformat(),
+                "agent": {
+                    "name": "domain-assistant",
+                    "model": model,
+                    "top_k": top_k,
+                    "prompt_version": "1.0",
+                },
+                "answers": answers,
+            }
+            output_path = Path(output_file).expanduser().resolve()
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            output_path.write_text(
+                json.dumps(partial_artifact, ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
+
+        if index < total:
+            time.sleep(3)
 
     return {
         "schema_version": "1.0",
@@ -500,6 +565,7 @@ def main() -> int:
             args.corpus_dir,
             top_k=args.top_k,
             progress=lambda message: print(message, flush=True),
+            output_file=args.output,
         )
         output = args.output.expanduser().resolve()
         output.parent.mkdir(parents=True, exist_ok=True)
