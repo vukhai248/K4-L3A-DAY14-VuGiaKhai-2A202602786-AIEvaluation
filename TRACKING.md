@@ -12,20 +12,20 @@
 
 | STT | Tiêu chí | Điểm tối đa | Trạng thái | Ghi chú / Yêu cầu chính |
 |:---:|---|:---:|:---:|---|
-| 1 | **Core Coding & Tests Pass** | 50 | ⏳ Chưa xong | Hoàn thành Task 1–5 trong `template.py` / `solution/solution.py`, pass 41/42 tests |
-| 2 | **Golden Dataset (20 QA)** | 15 | ⏳ Chưa xong | 20 QA (5 Easy, 7 Medium, 5 Hard, 3 Adversarial), phủ đủ 10 docs, validate PASS |
-| 3 | **LLM-as-a-Judge Rubric Design** | 10 | ⏳ Chưa xong | Exercise 3.3 trong `exercises.md`: rubric 1–5 domain OrbitTech, kiểm soát 3 bias |
-| 4 | **Benchmark, 5 Whys & Failure Analysis** | 15 | ⏳ Chưa xong | Exercise 3.2, 3 cases 5 Whys trong `reflection.md`, failure taxonomy & improvement log |
-| 5 | **Code Quality & Regression Strategy** | 10 | ⏳ Chưa xong | Clean code, type hints, chiến lược CI/CD quality gate chặn drop > 0.05 trong `reflection.md` |
+| 1 | **Core Coding & Tests Pass** | 50 | ✅ **ĐẠT 50/50** | Hoàn thành Task 1–5 trong `template.py` & `solution/solution.py`, **42/42 tests PASS** |
+| 2 | **Golden Dataset (20 QA)** | 15 | ⏳ Đang làm (CP4) | 20 QA (5 Easy, 7 Medium, 5 Hard, 3 Adversarial), phủ đủ 10 docs, validate PASS |
+| 3 | **LLM-as-a-Judge Rubric Design** | 10 | ⏳ Chưa xong (CP4) | Exercise 3.3 trong `exercises.md`: rubric 1–5 domain OrbitTech, kiểm soát 3 bias |
+| 4 | **Benchmark, 5 Whys & Failure Analysis** | 15 | ⏳ Chưa xong (CP5) | Exercise 3.2, 3 cases 5 Whys trong `reflection.md`, failure taxonomy & improvement log |
+| 5 | **Code Quality & Regression Strategy** | 10 | ⏳ Chưa xong (CP5) | Clean code, type hints, chiến lược CI/CD quality gate chặn drop > 0.05 trong `reflection.md` |
 | **TỔNG** | **Bắt buộc** | **100** | | |
 | *Bonus* | Exercise 3.4 (So sánh 2 frameworks) | +5 | ⚪ Tùy chọn | So sánh RAGAS vs DeepEval/TruLens trên cùng dataset trong `exercises.md` |
-| *Bonus* | Exercise 3.5 (Retrieval Reranking) | +5 | ⚪ Tùy chọn | Implement `rerank_by_overlap()`, chạy test thứ 42 và đo delta Context Precision |
+| *Bonus* | Exercise 3.5 (Retrieval Reranking) | +5 | ✅ Đã code hàm | Implement `rerank_by_overlap()`, test thứ 42 đã PASS, cần đo kết quả trong `exercises.md` |
 
 ---
 
 ## 📦 2. DANH SÁCH SẢN PHẨM NỘP BÀI (DELIVERABLES)
 
-- [ ] `solution/solution.py`: Bản sao hoàn thiện từ `template.py` (Tất cả 5 Tasks bắt buộc).
+- [x] `solution/solution.py`: Bản sao hoàn thiện từ `template.py` (Tất cả 5 Tasks bắt buộc + hàm bonus rerank).
 - [ ] `golden_dataset.json`: File dataset 20 QA đã điền đầy đủ và pass `validate_golden_dataset.py`.
 - [ ] `exercises.md`: Đã hoàn thiện Part 1 (1.1, 1.2, 1.3), Part 3 (3.1, 3.2, 3.3, và 3.4/3.5 nếu làm bonus).
 - [ ] `reflection.md`: Đã hoàn thiện toàn bộ 7 mục (summary, 3 case 5 Whys, clustering, improvement log, regression, loop, reflection).
@@ -99,25 +99,25 @@
 ---
 
 ### 🔹 CHECKPOINT 3: Task 4 (Benchmark Runner) & Task 5 (Failure Analyzer) (CP3)
-- [ ] **CP3.1** Hoàn thiện `BenchmarkRunner`:
+- [x] **CP3.1** Hoàn thiện `BenchmarkRunner`:
   - `run(qa_pairs, agent_fn, evaluator)`: gọi agent, forward `retrieved_contexts` vào `run_full_eval()`.
   - `generate_report(results)`: tính pass rate, average answer metrics và average retrieval metrics (bỏ qua `None`).
   - `run_regression(new_results, baseline_results)`: phát hiện metric tụt > 0.05 so với baseline.
   - `identify_failures(results, threshold)`: lọc danh sách kết quả có `overall_score < threshold` hoặc `passed == False`.
-- [ ] **CP3.2** Hoàn thiện `FailureAnalyzer`:
+- [x] **CP3.2** Hoàn thiện `FailureAnalyzer`:
   - `categorize_failures(failures)`: đếm số lượng lỗi theo từng `failure_type`.
   - `find_root_cause(failure)`: suy luận nguyên nhân gốc dựa vào metric thấp nhất.
   - `generate_improvement_suggestions(failures)`: đưa ra ít nhất 3 hành động cụ thể.
   - `generate_improvement_log(failures, suggestions)`: sinh bảng Markdown tracking lỗi và đề xuất xử lý.
-- [ ] **CP3.3** Đồng bộ `template.py` sang `solution/solution.py`:
+- [x] **CP3.3** Đồng bộ `template.py` sang `solution/solution.py`:
   ```powershell
   Copy-Item template.py solution/solution.py
   ```
-- [ ] **CP3.4** Chạy toàn bộ Test Suite bắt buộc:
+- [x] **CP3.4** Chạy toàn bộ Test Suite:
   ```powershell
   pytest tests/ -v
   ```
-  *Kỳ vọng:* **41 passed, 1 skipped** (test reranking skipped nếu chưa làm bonus).
+  *Kết quả:* **42/42 passed in 0.08s** (đạt 100% bao gồm cả test bonus reranking).
 
 ---
 
@@ -192,4 +192,5 @@
 | CP0 | Xác nhận môi trường & baseline test | Python 3.13.13, 42 tests failed đúng baseline | AI Pair Programmer |
 | CP1 | Hoàn thành Task 1 (Data Models) | `TestEvalResultOverallScore` PASS 3/3 tests | AI Pair Programmer |
 | CP2 | Hoàn thành Task 2 & 3 (RAGAS & LLMJudge) | Targeted tests PASS 19/19 tests (cộng dồn 22 passed, 20 failed) | AI Pair Programmer |
+| CP3 | Hoàn thành Task 4 & 5 (Runner & Analyzer) | Full suite PASS 42/42 tests (100% bao gồm bonus) | AI Pair Programmer |
 | | | | |
